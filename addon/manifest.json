@@ -1,0 +1,26 @@
+{
+    "manifest_version": 2,
+    "name": "FathomFox Rulesets",
+    "version": "1.0.0",
+    "description": "Rulesets for FathomFox to optimize",
+    "applications": {
+        "gecko": {
+            "id": "fathomfoxrulesets@mozilla.com"
+        }
+    },
+    "icons": {
+        "48": "icons/icon.svg",
+        "96": "icons/icon.svg"
+    },
+    "background": {
+        "scripts": ["trainables.js", "background.js"]
+    },
+    "content_scripts": [{
+        "matches": ["<all_urls>"],
+        "js": ["trainables.js", "contentScript.js"]
+    }],
+    "permissions": [
+        "<all_urls>",
+        "tabs"
+    ]
+}
