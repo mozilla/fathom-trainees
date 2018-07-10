@@ -1,5 +1,5 @@
 /** Handle messages that come in from the FathomFox webext. */
-function handleExternalMessage(request, sender, sendResponse) {
+async function handleExternalMessage(request, sender, sendResponse) {
     console.log('got external message');
     if (request.type === 'rulesetSucceededOnTabs') {
         // Run a given ruleset on a given set of tabs, and return an array
@@ -14,10 +14,10 @@ function handleExternalMessage(request, sender, sendResponse) {
         console.log('got request for keys');  // To get this to fire, reload the FathomFox extension, then reopen the Training page.
         console.log(request);
         // Return an array of IDs of rulesets we can train.
-        sendResponse('response!'); //trainables.keys());
+        return 'response!'; //trainables.keys());
     } else if (request.type === 'trainableCoeffs') {
         // Return the initial coeffs of some ruleset.
-        sendResponse('response again!'); //trainables.keys());
+        return 'response again!'; //trainables.keys());
         //sendResponse(trainables.get(request.trainableId).coeffs);
     }
 }
