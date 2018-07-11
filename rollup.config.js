@@ -30,5 +30,5 @@ function mindlesslyFactoredOutSettings(name) {
 }
 
 export default [
-    mindlesslyFactoredOutSettings('trainables')
+    mindlesslyFactoredOutSettings('trainees')
 ];

@@ -6,9 +6,9 @@ import {ancestors} from 'fathom-web/utilsForFrontend';
  * A map of names to callables that return whether a hard-coded ruleset query
  * succeeded. All of these become available to train via the UI.
  */
-const trainables = new Map();
+const trainees = new Map();
 
-trainables.set(
+trainees.set(
     'overlay',
     {coeffs: [2, 1, 3, 1, 1],  // 93.8% accuracy with exponentiation-based weights
      rulesetMaker:
@@ -205,4 +205,4 @@ trainables.set(
     }
 );
 
-export default trainables;
+export default trainees;

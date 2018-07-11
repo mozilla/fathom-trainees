@@ -7,14 +7,14 @@ function handleExternalMessage(request, sender, sendResponse) {
             tabId => browser.tabs.sendMessage(
                 tabId,
                 {type: 'rulesetSucceeded',
-                 trainableId: request.trainableId,
+                 traineeId: request.traineeId,
                  coeffs: request.coeffs})));
-    } else if (request.type === 'trainableKeys') {
+    } else if (request.type === 'traineeKeys') {
         // Return an array of IDs of rulesets we can train.
-        sendResponse(Array.from(trainables.keys()));
-    } else if (request.type === 'trainableCoeffs') {
+        sendResponse(Array.from(trainees.keys()));
+    } else if (request.type === 'traineeCoeffs') {
         // Return the initial coeffs of some ruleset.
-        sendResponse(trainables.get(request.trainableId).coeffs);
+        sendResponse(trainees.get(request.traineeId).coeffs);
     }
 }
 browser.runtime.onMessageExternal.addListener(handleExternalMessage);
