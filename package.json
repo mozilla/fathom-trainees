@@ -1,7 +1,7 @@
 {
   "name": "fathom-trainees",
   "version": "1.0.0",
-  "description": "Rulesets for FathomFox to optimize",
+  "description": "Example rulesets that plug into FathomFox's trainer",
   "scripts": {
     "build": "rollup -c",
     "watch": "rollup -c -w"
