@@ -3,14 +3,20 @@ import {ancestors} from 'fathom-web/utilsForFrontend';
 
 
 /**
- * A map of names to callables that return whether a hard-coded ruleset query
- * succeeded. All of these become available to train via the UI.
+ * Rulesets to train.
+ *
+ * More mechanically, a map of names to {coeffs, rulesetMaker} objects.
+ * rulesetMaker is a function that takes an Array of coefficients and returns a
+ * ruleset that uses them. coeffs is typically the best-yet-found coefficients
+ * for a ruleset but can also be some more widely flung ones that you want to
+ * start the trainer from. The rulesets you specify here show up in the Train
+ * UI, from which you can kick off a training run.
  */
 const trainees = new Map();
 
 trainees.set(
     'overlay',
-    {coeffs: [2, 1, 3, 1, 1],  // 93.8% accuracy with exponentiation-based weights
+    {coeffs: [2, 1, 3, 1, 1],  // 93.8% training-set accuracy with exponentiation-based weights
      rulesetMaker:
         // I don't think V8 is smart enough to compile this once and then sub in
         // new coeff values. I'm not sure about Spidermonkey. We may want to
