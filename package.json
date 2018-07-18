@@ -4,7 +4,8 @@
   "description": "Example rulesets that plug into FathomFox's trainer",
   "scripts": {
     "build": "rollup -c",
-    "watch": "rollup -c -w"
+    "watch": "rollup -c -w",
+    "browser": "web-ext run -s addon/"
   },
   "license": "MPL-2.0",
   "devDependencies": {
