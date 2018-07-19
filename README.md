@@ -1,6 +1,6 @@
 # Fathom Trainees
 
-This is a "sidecar" addon to FathomFox. Fork this repo, stick your own ruleset in it, and install it alongside [FathomFox](https://addons.mozilla.org/en-US/firefox/addon/fathomfox/) to train your ruleset coefficients. By keeping your rulesets in their own addons, you avoid having to fork and keep up with FathomFox itself, and you can choose and control your own independent compilation pipeline.
+This is a "sidecar" addon to FathomFox; it is where you park rulesets to be trained using [FathomFox's Trainer](https://github.com/mozilla/fathom-fox#the-trainer). Fork this repo, stick your own ruleset in it, and install it alongside [FathomFox](https://addons.mozilla.org/en-US/firefox/addon/fathomfox/) to optimize your coefficients. By keeping your rulesets in a separate addon, you avoid having to fork and keep up with FathomFox itself, and you can choose and control your own independent compilation pipeline.
 
 ## Getting Started
 
