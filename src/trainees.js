@@ -15,6 +15,8 @@ import {ancestors} from 'fathom-web/utilsForFrontend';
 const trainees = new Map();
 
 trainees.set(
+    // A ruleset that finds the full-screen, content-blocking overlays that
+    // often go behind modal popups
     'overlay',
     {coeffs: [2, 1, 3, 1, 1],  // 93.8% training-set accuracy with exponentiation-based weights
      rulesetMaker:
