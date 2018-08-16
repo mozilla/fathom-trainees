@@ -5,7 +5,8 @@
   "scripts": {
     "build": "rollup -c",
     "watch": "rollup -c -w",
-    "browser": "web-ext run -s addon/"
+    "browser": "web-ext run -s addon/",
+    "install": "yarn install --ignore-engines"
   },
   "license": "MPL-2.0",
   "devDependencies": {
