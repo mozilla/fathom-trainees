@@ -1341,8 +1341,9 @@ fast-safe-stringify@^1.0.8, fast-safe-stringify@^1.2.3:
   version "1.2.3"
   resolved "https://registry.yarnpkg.com/fast-safe-stringify/-/fast-safe-stringify-1.2.3.tgz#9fe22c37fb2f7f86f06b8f004377dbf8f1ee7bc1"
 
-"fathom-web@file:./fathom":
-  version "2.3.0"
+fathom-web@^2.4.0:
+  version "2.4.0"
+  resolved "https://registry.yarnpkg.com/fathom-web/-/fathom-web-2.4.0.tgz#47c96ba0db963b2ad4d40f8040f765b6c7e0a35d"
   dependencies:
     jsdom "^11.2.0"
     wu "^2.1.0"
