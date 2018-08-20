@@ -5,7 +5,7 @@ This is a "sidecar" addon to FathomFox; it is where you park rulesets to be trai
 ## Getting Started
 
 1. Fork this repository.
-2. Install libraries: `yarn run install`.
+2. Install libraries: `yarn run deps`.
 3. Edit `src/trainees.js`, replacing the included example ruleset with your own. Or leave the example there the first time around, just to make sure everything is working. You can add multiple rulesets if you wish.
 4. Run rollup in the background to keep the compiled version of your addon up to date as you edit: `yarn run watch`.
 5. In another terminal, fire up the addon in Firefox, reloading it as it changes: `yarn run browser`.
