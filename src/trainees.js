@@ -209,7 +209,17 @@ trainees.set(
                 rule(type('overlay').max(), out('overlay'))
             );
             return rules;
-        }
+        },
+
+        // By default elements with a data-fathom attribute that matches the name of
+        // this traniee set are considered a success match for the ruleset.
+        //
+        // The `successFunction` field allows for alternative success functions.
+        // A successFunction is passed two arguments: and array of found fnodes, and
+        // the current ruleset ID.
+        //
+        // The default function for this `overlay` ruleset is essentially:
+        // successFunction: found => found[0].element.dataset.fathom === 'overlay',
     }
 );
 
