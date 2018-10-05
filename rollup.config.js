@@ -30,5 +30,7 @@ function mindlesslyFactoredOutSettings(name) {
 }
 
 export default [
-    mindlesslyFactoredOutSettings('trainees')
+    mindlesslyFactoredOutSettings('trainees'),
+    mindlesslyFactoredOutSettings('background'),
+    mindlesslyFactoredOutSettings('contentScript')
 ];

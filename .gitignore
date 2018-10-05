@@ -1,2 +1,4 @@
 /node_modules
 /addon/trainees.js
+/addon/background.js
+/addon/contentScript.js
