@@ -19,6 +19,7 @@ trainees.set(
     // often go behind modal popups
     'overlay',
     {coeffs: [2, 1, 3, 1, 1],  // 93.8% training-set accuracy with exponentiation-based weights
+     //viewportSize: {width: 1024, height: 768},  // Optional. Defaults to 1024x768.
      rulesetMaker:
         // I don't think V8 is smart enough to compile this once and then sub in
         // new coeff values. I'm not sure about Spidermonkey. We may want to
