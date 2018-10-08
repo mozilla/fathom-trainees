@@ -1,10 +1,11 @@
 /** React to commands sent from the background script. */
 
-function labelledSuccessFunction(found, traineeId) {
-    // Assume the out() key and the data-fathom attr are both identical
-    // to the key of the trainee in the map.
+function foundLabelIsTraineeId(facts, traineeId) {
+    // The default success function for a ruleset is to match on elements with a
+    // data-fathom attribute containing the traineeId.
     // Using the first found node is arbitrary.
-    return found[0].element.dataset.fathom === traineeId;
+    const found = facts.get(traineeId);
+    return found.length ? found[0].element.dataset.fathom === traineeId : false;
 }
 
 async function dispatch(request) {
@@ -14,10 +15,9 @@ async function dispatch(request) {
         // element.
         const trainee = trainees.get(request.traineeId);
         const rules = trainee.rulesetMaker(request.coeffs);
-        const successFunc = trainee.successFunction || labelledSuccessFunction;
         const facts = rules.against(window.document);
-        const found = facts.get(request.traineeId);
-        return found.length ? successFunc(found, request.traineeId) : false;
+        const successFunc = trainee.successFunction || foundLabelIsTraineeId;
+        return successFunc(facts, request.traineeId);
     }
     return Promise.resolve({});
 }

@@ -215,11 +215,11 @@ trainees.set(
         // this traniee set are considered a success match for the ruleset.
         //
         // The `successFunction` field allows for alternative success functions.
-        // A successFunction is passed two arguments: and array of found fnodes, and
+        // A successFunction is passed two arguments: and array of found facts, and
         // the current ruleset ID.
         //
         // The default function for this `overlay` ruleset is essentially:
-        // successFunction: found => found[0].element.dataset.fathom === 'overlay',
+        // successFunction: facts.get('overlay')[0].element.dataset.fathom === 'overlay'
     }
 );
 
