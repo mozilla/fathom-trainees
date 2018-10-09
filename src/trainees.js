@@ -19,7 +19,23 @@ trainees.set(
     // often go behind modal popups
     'overlay',
     {coeffs: [2, 1, 3, 1, 1],  // 93.8% training-set accuracy with exponentiation-based weights
-     //viewportSize: {width: 1024, height: 768},  // Optional. Defaults to 1024x768.
+
+     // viewportSize: {width: 1024, height: 768},
+     //
+     // The content-area size to use while training. Defaults to 1024x768.
+
+     // successFunction: (facts, traineeId) => trueOrFalse,
+     //
+     // By default, elements with a `data-fathom` attribute that matches the
+     // trainee ID are considered a successful find for the ruleset.
+     //
+     // The `successFunction` property allows for alternative success
+     // functions. A success function receives two arguments--a BoundRuleset
+     // and the current trainee ID--and returns whether the ruleset succeeded.
+     //
+     // The default function for this example ruleset is essentially...
+     // successFunction: facts.get('overlay')[0].element.dataset.fathom === 'overlay'
+
      rulesetMaker:
         // I don't think V8 is smart enough to compile this once and then sub in
         // new coeff values. I'm not sure about Spidermonkey. We may want to
