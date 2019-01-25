@@ -15,6 +15,130 @@ import {ancestors} from 'fathom-web/utilsForFrontend';
 const trainees = new Map();
 
 trainees.set(
+    'popUp',
+    {coeffs: [1,1,1,2,1],  
+
+     rulesetMaker:
+        function ([coeffWidth, coeffNearlyOpaque, coeffForm, coeffClassOrId, coeffVisible]) {
+
+            const ZEROISH = .08;
+            const ONEISH = .9;
+
+            function oneThirdWidth(fnode) {
+                const rect = fnode.element.getBoundingClientRect();
+                const wDiff = rect.width / window.innerWidth;
+                return trapezoid(rect.width, window.innerWidth/3, window.innerWidth) ** coeffWidth;
+            }
+
+            function containsForm(fnode) {
+                const element = fnode.element;
+
+                let children = Array.from(element.children);
+                
+                let grandChildren = [];
+                for (const c of children) {
+                    grandChildren.concat(Array.from(c.children));
+                }
+
+
+                let ggChildren = [];
+                for (const c of grandChildren){
+                    ggChildren.concat(Array.from(c.children));
+                }
+
+                let allNodes = children.concat(grandChildren).concat(ggChildren);
+
+                let formCounter = 0;
+                for (const node of allNodes) {
+                    if (node.nodeName === "form"){
+                        formCounter +=  1;
+                    } 
+                }
+
+                return (formCounter === 0) ? 1 : 2;
+            }
+
+            function suspiciousClassOrId(fnode) {
+                const element = fnode.element;
+                const attributeNames = ['class', 'id'];
+                let numOccurences = 0;
+                function numberOfSuspiciousSubstrings(value) {
+                    return value.includes('popup') + value.includes('subscription') + value.includes('newsletter')+ value.includes('modal');
+                }
+
+                for (const name of attributeNames) {
+                    let values = element.getAttribute(name);
+                    if (values) {
+                        if (!Array.isArray(values)) {
+                            values = [values];
+                        }
+                        for (const value of values) {
+                            numOccurences += numberOfSuspiciousSubstrings(value);
+                        }
+                    }
+                }
+                return numOccurences * coeffClassOrId;
+            }
+
+            function buttons(fnode) {
+                let descendants = Array.from(fnode.element.querySelectorAll("*"));
+                let buttonCounter = 0;
+                for (const d of descendants){
+                    if(d.nodeName === "button") {
+                        buttonCounter += 1;
+                    }
+                }
+                return (buttonCounter > 4) ? 1 + 1/buttonCounter : buttonCounter;
+            }
+
+            
+
+            /* Utility procedures */
+
+            /**
+             * Scale a number to the range [ZEROISH, ONEISH].
+             *
+             * For a rising trapezoid, the result is ZEROISH until the input
+             * reaches zeroAt, then increases linearly until oneAt, at which it
+             * becomes ONEISH. To make a falling trapezoid, where the result is
+             * ONEISH to the left and ZEROISH to the right, use a zeroAt greater
+             * than oneAt.
+             */
+            function trapezoid(number, zeroAt, oneAt) {
+                const isRising = zeroAt < oneAt;
+                if (isRising) {
+                    if (number <= zeroAt) {
+                        return ZEROISH;
+                    } else if (number >= oneAt) {
+                        return ONEISH;
+                    }
+                } else {
+                    if (number >= zeroAt) {
+                        return ZEROISH;
+                    } else if (number <= oneAt) {
+                        return ONEISH;
+                    }
+                }
+                const slope = (ONEISH - ZEROISH) / (oneAt - zeroAt);
+                return slope * (number - zeroAt) + ZEROISH;
+            }
+
+            /* The actual ruleset */
+
+            const rules = ruleset(
+                rule(dom('div'), type('popUp')),
+                rule(type('popUp'), score(oneThirdWidth)),
+                rule(type('popUp'), score(suspiciousClassOrId)),
+                rule(type('popUp'), score(containsForm)),
+                rule(type('popUp'), score(buttons)),
+                rule(type('popUp').max(), out('popUp'))
+            );
+            return rules;
+        }
+    }
+)
+
+trainees.set(
     // A ruleset that finds the full-screen, content-blocking overlays that
     // often go behind modal popups
     'overlay',
@@ -128,15 +252,15 @@ trainees.set(
                 return (-((.3 + ZEROISH) ** (numOccurences + .1685)) + ONEISH) ** coeffClassOrId;
             }
 
-            /**
-             * Score hidden things real low.
-             *
-             * For training, this avoids false failures (and thus gives us more
-             * accurate accuracy numbers) since some pages have multiple
-             * popups, all but one of which are hidden in our captures.
-             * However, for actual use, consider dropping this rule, since
-             * deleting popups before they pop up may not be a bad thing.
-             */
+            // *
+            //  * Score hidden things real low.
+            //  *
+            //  * For training, this avoids false failures (and thus gives us more
+            //  * accurate accuracy numbers) since some pages have multiple
+            //  * popups, all but one of which are hidden in our captures.
+            //  * However, for actual use, consider dropping this rule, since
+            //  * deleting popups before they pop up may not be a bad thing.
+             
             function visible(fnode) {
                 const element = fnode.element;
                 for (const ancestor of ancestors(element)) {
@@ -217,7 +341,19 @@ trainees.set(
                 // since Fathom already implements it and it allows participation of
                 // all anded rules.
 
-                // I'm thinking each rule returns a confidence, 0..1, reined in by a sigmoid or trapezoid. That seems to fit the features I've collected well. I can probably make up most of those coefficients. Then we multiply the final results by a coeff each, for weighting. That will cap our total to the sum of the weights. We can then scale that sum down to 0..1 if we want, to build upon, by dividing by the product of the weights. [Actually, that weighting approach doesn't work, since the weights just get counteracted at the end. What we would need is a geometric mean-like approach, where individual rules' output is raised to a power to express its weight. Will Fathom's plain linear stuff suffice for now? If we want to keep an intuitive confidence-like meaning for each rule, we could have the coeffs be the powers each is raised to. I don't see the necessity of taking the root at the end (unless the score is being used as input to some intuitively meaningful threshold later), though we can outside the ruleset if we want. Going with a 0..1 confidence-based range means a rule can never boost a score--only add doubt--but I'm not sure that's a problem. If a rule wants to say "IHNI", it can also return 1 and thus not change the product. (Though they'll add 1 to n in the nth-root. Is that a problem?)] The optimizer will have to consider fractional coeffs so we can lighten up unduly certain rules.
+                // I'm thinking each rule returns a confidence, 0..1, reined in by a sigmoid or trapezoid. 
+                //That seems to fit the features I've collected well. I can probably make up most of those coefficients.
+                // Then we multiply the final results by a coeff each, for weighting. That will cap our total to the sum of the weights. 
+                //We can then scale that sum down to 0..1 if we want, to build upon, by dividing by the product of the weights. 
+                //[Actually, that weighting approach doesn't work, since the weights just get counteracted at the end. 
+                //What we would need is a geometric mean-like approach, where individual rules' output is raised to a power to express its weight. 
+                //Will Fathom's plain linear stuff suffice for now? If we want to keep an intuitive confidence-like meaning for each rule, 
+                //we could have the coeffs be the powers each is raised to. I don't see the necessity of taking the root at the end 
+                //(unless the score is being used as input to some intuitively meaningful threshold later), though we can outside the ruleset 
+                //if we want. Going with a 0..1 confidence-based range means a rule can never boost a score--only add doubt--
+                //but I'm not sure that's a problem. If a rule wants to say "IHNI", it can also return 1 and thus not change the product. 
+                //(Though they'll add 1 to n in the nth-root. Is that a problem?)] 
+                //The optimizer will have to consider fractional coeffs so we can lighten up unduly certain rules.
                 rule(type('overlay'), score(big)),
                 rule(type('overlay'), score(nearlyOpaque)),
                 rule(type('overlay'), score(monochrome)),
