@@ -16,7 +16,7 @@ const trainees = new Map();
 
 trainees.set(
     'popUp',
-    {coeffs: [1,1,1,2,1],  
+    {coeffs: [1,1,2,1,1],  
 
      rulesetMaker:
         function ([coeffWidth, coeffNearlyOpaque, coeffForm, coeffClassOrId, coeffVisible]) {
@@ -30,32 +30,24 @@ trainees.set(
                 return trapezoid(rect.width, window.innerWidth/3, window.innerWidth) ** coeffWidth;
             }
 
+            // exponentially decrease each level's score multiplier
             function containsForm(fnode) {
                 const element = fnode.element;
+                let queue = [element];
+                let formMultiplier = 1;
 
-                let children = Array.from(element.children);
-                
-                let grandChildren = [];
-                for (const c of children) {
-                    grandChildren.concat(Array.from(c.children));
+                for (let i = 1; i < 5; i++){
+                    let nextQueue = [];
+                    while (queue.length > 0){
+                        let e = queue.pop();
+                        nextQueue = nextQueue.concat(Array.from(e.children));
+                        if (e.nodeName === "FORM"){
+                            formMultiplier = formMultiplier * (1+coeffForm/i);
+                        }
+                    }
+                    queue = nextQueue;
                 }
-
-
-                let ggChildren = [];
-                for (const c of grandChildren){
-                    ggChildren.concat(Array.from(c.children));
-                }
-
-                let allNodes = children.concat(grandChildren).concat(ggChildren);
-
-                let formCounter = 0;
-                for (const node of allNodes) {
-                    if (node.nodeName === "form"){
-                        formCounter +=  1;
-                    } 
-                }
-
-                return (formCounter === 0) ? 1 : 2;
+                return formMultiplier;
             }
 
             function suspiciousClassOrId(fnode) {
@@ -84,7 +76,7 @@ trainees.set(
                 let descendants = Array.from(fnode.element.querySelectorAll("*"));
                 let buttonCounter = 0;
                 for (const d of descendants){
-                    if(d.nodeName === "button") {
+                    if(d.nodeName === "INPUT") {
                         buttonCounter += 1;
                     }
                 }
@@ -127,10 +119,11 @@ trainees.set(
 
             const rules = ruleset(
                 rule(dom('div'), type('popUp')),
-                rule(type('popUp'), score(oneThirdWidth)),
-                rule(type('popUp'), score(suspiciousClassOrId)),
+                rule(dom('form'), type('popUp')),
+                // rule(type('popUp'), score(oneThirdWidth)),
+                // rule(type('popUp'), score(suspiciousClassOrId)),
                 rule(type('popUp'), score(containsForm)),
-                rule(type('popUp'), score(buttons)),
+                // rule(type('popUp'), score(buttons)),
                 rule(type('popUp').max(), out('popUp'))
             );
             return rules;
