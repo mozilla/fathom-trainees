@@ -16,7 +16,7 @@ const trainees = new Map();
 
 trainees.set(
     'popUp',
-    {coeffs: [1,1,2,1,1],  
+    {coeffs: [1,1,2,3,1],  
 
      rulesetMaker:
         function ([coeffWidth, coeffNearlyOpaque, coeffForm, coeffClassOrId, coeffVisible]) {
@@ -69,7 +69,9 @@ trainees.set(
                         }
                     }
                 }
-                return numOccurences * coeffClassOrId;
+                const logisticFunction = logisticFuncGenerator(2,0,coeffClassOrId);
+
+                return logisticFunction(numOccurences);
             }
 
             function buttons(fnode) {
@@ -115,13 +117,19 @@ trainees.set(
                 return slope * (number - zeroAt) + ZEROISH;
             }
 
+            // returns a logistic function. Ideally we should input the growth rate as
+            // a hyperparameter from the optimization
+            function logisticFuncGenerator(maxVal, xMid, growthRate){
+                return x=> (maxVal)/(1+Math.exp(-1*growthRate*(x-xMid)));
+            }
+
             /* The actual ruleset */
 
             const rules = ruleset(
                 rule(dom('div'), type('popUp')),
                 rule(dom('form'), type('popUp')),
                 // rule(type('popUp'), score(oneThirdWidth)),
-                // rule(type('popUp'), score(suspiciousClassOrId)),
+                rule(type('popUp'), score(suspiciousClassOrId)),
                 rule(type('popUp'), score(containsForm)),
                 // rule(type('popUp'), score(buttons)),
                 rule(type('popUp').max(), out('popUp'))
