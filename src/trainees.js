@@ -10,7 +10,7 @@ const trainees = new Map();
 trainees.set(
     // A ruleset that finds the close button associated with a pop-up
     'closeButton',
-    {coeffs: [3,6,5,10,9,4,1,7],
+    {coeffs: [1,1,1,1,1,1,1,1],
 
      rulesetMaker:
 
@@ -255,7 +255,7 @@ trainees.set(
             /* The actual ruleset */
 
             const rules = ruleset(
-                rule(dom('div'), type('closeButton')),
+                rule(dom('div,button,a,i,span'), type('closeButton')),
                 rule(type('closeButton'), score(small)),
                 rule(type('closeButton'), score(square)),
                 //rule(type('closeButton'), score(onClick)),
