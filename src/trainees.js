@@ -14,7 +14,9 @@ trainees.set(
     // A ruleset that finds the close button associated with a pop-up
     'closeButton',
     closeButtonModel
+
 );
+
 
 trainees.set(
     'overlay',
@@ -25,6 +27,7 @@ trainees.set(
     'popUp',
     popUpModel
 );
+
 
 
 export default trainees;
