@@ -10,11 +10,11 @@ const trainees = new Map();
 trainees.set(
     // A ruleset that finds the close button associated with a pop-up
     'closeButton',
-    {coeffs: [1,1,1,1,1,1,1,1],
+    {coeffs: [1,1,1,1,2,1,1,2,1,1],
 
      rulesetMaker:
 
-        function ([coeffSmall, coeffSquare, coeffTopHalfPage, coeffAbsolutePosition, coeffCloseString, coeffModalString, coeffHiddenString, coeffVisible]) {
+        function ([coeffSmall, coeffSquare, coeffTopHalfPage, coeffAbsolutePosition, coeffCloseString, coeffModalString, coeffOverlay,coeffHiddenString, coeffOtherWord, coeffVisible]) {
             
             const ZEROISH = .08;
             
@@ -61,11 +61,11 @@ trainees.set(
                 const lowerBound = 0;
                 const upperBound = 1000;
 
-                return trapezoid(fnode.element.style.zIndex, lowerBound, upperBound) ** coeffZIndex;
+                return trapezoid(getComputedStyle(element).zIndex, lowerBound, upperBound) ** coeffZIndex;
             }
 
             function absolutePosition(fnode) {
-                return ((fnode.element.style.position == "absolute") ? ONEISH : ZEROISH) ** coeffAbsolutePosition;
+                return ((getComputedStyle(element).position == "absolute") ? ONEISH : ZEROISH) ** coeffAbsolutePosition;
             }
 
             /*
@@ -76,7 +76,6 @@ trainees.set(
                 function numberOfSuspiciousSubstrings(value) {
                     return 3*value.includes('close') + value.includes('modal') + value.includes('button');
                 }
-
                 for (const name of attributeNames) {
                     let values = element.getAttribute(name);
                     if (values) {
@@ -88,7 +87,6 @@ trainees.set(
                         }
                     }
                 }
-
                 // Function is Equivalent to 0.9 - 0.38^(0.1685 + numOccurences)
                 return (-((.3 + ZEROISH) ** (numOccurences + .1685)) + ONEISH) ** coeffClassOrId;
             }
@@ -142,6 +140,30 @@ trainees.set(
                 return (-((.3 + ZEROISH) ** (numOccurences + .1685)) + ONEISH) ** coeffModalString;
             }
 
+            function containsOverlay(fnode) {
+                const element = fnode.element;
+                const attributeNames = ['class', 'id'];
+                let numOccurences = 0;
+                function numberOfSuspiciousSubstrings(value) {
+                    return value.includes('overlay');
+                }
+
+                for (const name of attributeNames) {
+                    let values = element.getAttribute(name);
+                    if (values) {
+                        if (!Array.isArray(values)) {
+                            values = [values];
+                        }
+                        for (const value of values) {
+                            numOccurences += numberOfSuspiciousSubstrings(value);
+                        }
+                    }
+                }
+
+                // Function is Equivalent to 0.9 - 0.38^(0.1685 + numOccurences)
+                return (-((.3 + ZEROISH) ** (numOccurences + .1685)) + ONEISH) ** coeffOverlay;
+            }
+
             function containsHidden(fnode) {
                 const element = fnode.element;
                 const attributeNames = ['class', 'id'];
@@ -166,19 +188,40 @@ trainees.set(
                 return (-((.3 + ZEROISH) ** (numOccurences + .1685)) + ONEISH) ** coeffHiddenString;
             }
 
+            function containsOtherWords(fnode) {
+                const element = fnode.element;
+                const attributeNames = ['class', 'id'];
+                let numOccurences = 0;
+                function numberOfSuspiciousSubstrings(value) {
+                    return value.includes('newsletter');
+                }
+
+                for (const name of attributeNames) {
+                    let values = element.getAttribute(name);
+                    if (values) {
+                        if (!Array.isArray(values)) {
+                            values = [values];
+                        }
+                        for (const value of values) {
+                            numOccurences += numberOfSuspiciousSubstrings(value);
+                        }
+                    }
+                }
+
+                // Function is Equivalent to 0.9 - 0.38^(0.1685 + numOccurences)
+                return (-((.3 + ZEROISH) ** (numOccurences + .1685)) + ONEISH) ** coeffOtherWord;
+            }
+
             /*
             function caselessIncludes(haystack, needle) {
                 return haystack.toLowerCase().includes(needle);
             }
-
             function weightedIncludes(haystack, needle, coeff) {
                 return (caselessIncludes(haystack, needle) ? ONEISH : ZEROISH) ** coeff;
             }
-
             function hasCloseInClassName(fnode) {
                 return weightedIncludes(fnode.element.className, 'close', coeffHasCloseInClass);
             }
-
             function hasCloseInID(fnode) {
                 return weightedIncludes(fnode.element.id, 'close', coeffHasCloseInID);
             }
@@ -260,12 +303,12 @@ trainees.set(
                 rule(type('closeButton'), score(square)),
                 //rule(type('closeButton'), score(onClick)),
                 rule(type('closeButton'), score(topHalfPage)),
-                //rule(type('closeButton'), score(zIndex)),
                 rule(type('closeButton'), score(absolutePosition)),
-                //rule(type('closeButton'), score(suspiciousClassOrId)),
                 rule(type('closeButton'), score(containsClose)),
                 rule(type('closeButton'), score(containsModal)),
+                rule(type('closeButton'), score(containsOverlay)),
                 rule(type('closeButton'), score(containsHidden)),
+                rule(type('closeButton'), score(containsOtherWords)),
                 rule(type('closeButton'), score(visible)),
                 rule(type('closeButton').max(), out('closeButton'))
             );
