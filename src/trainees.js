@@ -18,7 +18,14 @@ trainees.set(
     // A ruleset that finds the full-screen, content-blocking overlays that
     // often go behind modal popups
     'overlay',
-    {coeffs: [2, 1, 3, 1, 1],  // 93.8% training-set accuracy with exponentiation-based weights
+    {coeffs: new Map([  // [rule name, coefficient]
+        ['big', 50.4946],
+        ['nearlyOpaque', 48.6396],
+        ['monochrome', 42.8406],
+        ['classOrId', 0.5005],
+        ['visible', 55.8750]]),
+     // Bias is -139.3106 for this example, though that isn't needed until
+     // production.
 
      // viewportSize: {width: 1024, height: 768},
      //
@@ -42,7 +49,7 @@ trainees.set(
         // optimize by rolling it into a class and storing coeffs explicitly in an
         // instance var. [Nope, Spidermonkey does it as efficiently as one could
         // hope, with just a {code, pointer to closure scope} pair.]
-        function ([coeffBig, coeffNearlyOpaque, coeffMonochrome, coeffClassOrId, coeffVisible]) {
+        function () {
             /**
              * We avoid returning full 0 from any rule, because that wipes out the tuner's
              * ability to adjust its impact by raising it to a power. .08 is big enough
@@ -70,7 +77,7 @@ trainees.set(
                 const rect = fnode.element.getBoundingClientRect();
                 const hDifference = Math.abs(rect.height - window.innerHeight);
                 const wDifference = Math.abs(rect.width - window.innerWidth);
-                return trapezoid(hDifference + wDifference, 250, 0) ** coeffBig;  // 250px is getting into "too tall to just be nav or something" territory.
+                return trapezoid(hDifference + wDifference, 250, 0);  // 250px is getting into "too tall to just be nav or something" territory.
             }
 
             /**
@@ -90,7 +97,7 @@ trainees.set(
                 } else {
                     ret = trapezoid(totalOpacity, .4, .6);
                 }
-                return ret ** coeffNearlyOpaque;
+                return ret;
             }
 
             /**
@@ -98,7 +105,7 @@ trainees.set(
              */
             function monochrome(fnode) {
                 const rgba = rgbaFromString(getComputedStyle(fnode.element).getPropertyValue('background-color'));
-                return trapezoid(1 - saturation(...rgba), .96, 1) ** coeffMonochrome;
+                return trapezoid(1 - saturation(...rgba), .96, 1);
             }
 
             function suspiciousClassOrId(fnode) {
@@ -121,11 +128,11 @@ trainees.set(
                     }
                 }
 
-                // 1 occurrence gets us to about 70% certainty; 2, 90%. It bottoms
+                // 1 occurrence gets us to about 75% certainty; 2, 92%. It bottoms
                 // out at ZEROISH and tops out at ONEISH.
                 // TODO: Figure out how to derive the magic number .1685 from
                 // ZEROISH and ONEISH.
-                return (-((.3 + ZEROISH) ** (numOccurences + .1685)) + ONEISH) ** coeffClassOrId;
+                return (-((.3 + ZEROISH) ** (numOccurences + .1685)) + ONEISH);
             }
 
             /**
@@ -143,14 +150,14 @@ trainees.set(
                     const style = getComputedStyle(ancestor);
                     if (style.getPropertyValue('visibility') === 'hidden' ||
                         style.getPropertyValue('display') === 'none') {
-                        return ZEROISH ** coeffVisible;
+                        return ZEROISH;
                     }
                     // Could add opacity and size checks here, but the
                     // "nearlyOpaque" and "big" rules already deal with opacity
                     // and size. If they don't do their jobs, maybe repeat
                     // their work here (so it gets a different coefficient).
                 }
-                return ONEISH ** coeffVisible;
+                return ONEISH;
             }
 
             /* Utility procedures */
@@ -211,20 +218,20 @@ trainees.set(
 
             /* The actual ruleset */
 
-            const rules = ruleset(
+            const rules = ruleset([
                 rule(dom('div'), type('overlay')),
                 // Fuzzy AND is multiplication (at least that's the definition we use,
                 // since Fathom already implements it and it allows participation of
                 // all anded rules.
 
                 // I'm thinking each rule returns a confidence, 0..1, reined in by a sigmoid or trapezoid. That seems to fit the features I've collected well. I can probably make up most of those coefficients. Then we multiply the final results by a coeff each, for weighting. That will cap our total to the sum of the weights. We can then scale that sum down to 0..1 if we want, to build upon, by dividing by the product of the weights. [Actually, that weighting approach doesn't work, since the weights just get counteracted at the end. What we would need is a geometric mean-like approach, where individual rules' output is raised to a power to express its weight. Will Fathom's plain linear stuff suffice for now? If we want to keep an intuitive confidence-like meaning for each rule, we could have the coeffs be the powers each is raised to. I don't see the necessity of taking the root at the end (unless the score is being used as input to some intuitively meaningful threshold later), though we can outside the ruleset if we want. Going with a 0..1 confidence-based range means a rule can never boost a score--only add doubt--but I'm not sure that's a problem. If a rule wants to say "IHNI", it can also return 1 and thus not change the product. (Though they'll add 1 to n in the nth-root. Is that a problem?)] The optimizer will have to consider fractional coeffs so we can lighten up unduly certain rules.
-                rule(type('overlay'), score(big)),
-                rule(type('overlay'), score(nearlyOpaque)),
-                rule(type('overlay'), score(monochrome)),
-                rule(type('overlay'), score(suspiciousClassOrId)),
-                rule(type('overlay'), score(visible)),
+                rule(type('overlay'), score(big), {name: 'big'}),
+                rule(type('overlay'), score(nearlyOpaque), {name: 'nearlyOpaque'}),
+                rule(type('overlay'), score(monochrome), {name: 'monochrome'}),
+                rule(type('overlay'), score(suspiciousClassOrId), {name: 'classOrId'}),
+                rule(type('overlay'), score(visible), {name: 'visible'}),
                 rule(type('overlay').max(), out('overlay'))
-            );
+            ]);
             return rules;
         }
     }
