@@ -43,6 +43,9 @@ trainees.set(
      // The default function for this example ruleset is essentially...
      // successFunction: facts.get('overlay')[0].element.dataset.fathom === 'overlay'
 
+     vectorType: 'overlay',
+     // The type of node to extract features from when using the Vectorizer
+
      rulesetMaker:
         // I don't think V8 is smart enough to compile this once and then sub in
         // new coeff values. I'm not sure about Spidermonkey. We may want to
