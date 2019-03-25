@@ -54,22 +54,6 @@ trainees.set(
         // hope, with just a {code, pointer to closure scope} pair.]
         function () {
             /**
-             * We avoid returning full 0 from any rule, because that wipes out the tuner's
-             * ability to adjust its impact by raising it to a power. .08 is big enough
-             * that raising it to an annealer-accessible 1/6 power gets it up to a
-             * respectable .65.
-             */
-            const ZEROISH = .08;
-            /**
-             * Likewise, .9 is low enough that raising it to 5 gets us down to .53. This is
-             * a pretty arbitrary selection. I feel like ZEROISH and ONEISH should be
-             * symmetric in some way, but it's not obvious to me how. If they're equal
-             * distances from the extremes at ^(1/4) and ^4, for example, they won't be at
-             * ^(1/5) and ^5. So I expect we'll revisit this.
-             */
-            const ONEISH = .9;
-
-            /**
              * Return whether the passed-in div is the size of the whole viewport/document
              * or nearly so.
              */
@@ -96,7 +80,7 @@ trainees.set(
                 const totalOpacity = opacity * bgColorAlpha;
                 let ret;
                 if (totalOpacity === 1) {  // seems to work even though a float
-                    ret = ZEROISH;
+                    ret = 0;
                 } else {
                     ret = trapezoid(totalOpacity, .4, .6);
                 }
@@ -132,10 +116,10 @@ trainees.set(
                 }
 
                 // 1 occurrence gets us to about 75% certainty; 2, 92%. It bottoms
-                // out at ZEROISH and tops out at ONEISH.
+                // out at 0 and tops out at 1.
                 // TODO: Figure out how to derive the magic number .1685 from
-                // ZEROISH and ONEISH.
-                return (-((.3 + ZEROISH) ** (numOccurences + .1685)) + ONEISH);
+                // 0 and 1.
+                return (-(.3 ** (numOccurences + .1685)) + 1);
             }
 
             /**
@@ -153,14 +137,14 @@ trainees.set(
                     const style = getComputedStyle(ancestor);
                     if (style.getPropertyValue('visibility') === 'hidden' ||
                         style.getPropertyValue('display') === 'none') {
-                        return ZEROISH;
+                        return 0;
                     }
                     // Could add opacity and size checks here, but the
                     // "nearlyOpaque" and "big" rules already deal with opacity
                     // and size. If they don't do their jobs, maybe repeat
                     // their work here (so it gets a different coefficient).
                 }
-                return ONEISH;
+                return 1;
             }
 
             /* Utility procedures */
@@ -179,31 +163,30 @@ trainees.set(
             }
 
             /**
-             * Scale a number to the range [ZEROISH, ONEISH].
+             * Scale a number to the range [0, 1].
              *
-             * For a rising trapezoid, the result is ZEROISH until the input
-             * reaches zeroAt, then increases linearly until oneAt, at which it
-             * becomes ONEISH. To make a falling trapezoid, where the result is
-             * ONEISH to the left and ZEROISH to the right, use a zeroAt greater
-             * than oneAt.
+             * For a rising trapezoid, the result is 0 until the input reaches
+             * zeroAt, then increases linearly until oneAt, at which it becomes
+             * 1. To make a falling trapezoid, where the result is 1 to the
+             * left and 0 to the right, use a zeroAt greater than oneAt.
              */
             function trapezoid(number, zeroAt, oneAt) {
                 const isRising = zeroAt < oneAt;
                 if (isRising) {
                     if (number <= zeroAt) {
-                        return ZEROISH;
+                        return 0;
                     } else if (number >= oneAt) {
-                        return ONEISH;
+                        return 1;
                     }
                 } else {
                     if (number >= zeroAt) {
-                        return ZEROISH;
+                        return 0;
                     } else if (number <= oneAt) {
-                        return ONEISH;
+                        return 1;
                     }
                 }
-                const slope = (ONEISH - ZEROISH) / (oneAt - zeroAt);
-                return slope * (number - zeroAt) + ZEROISH;
+                const slope = 1 / (oneAt - zeroAt);
+                return slope * (number - zeroAt);
             }
 
             /**
