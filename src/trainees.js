@@ -5,12 +5,13 @@ import {ancestors} from 'fathom-web/utilsForFrontend';
 /**
  * Rulesets to train.
  *
- * More mechanically, a map of names to {coeffs, rulesetMaker} objects.
- * rulesetMaker is a function that takes an Array of coefficients and returns a
- * ruleset that uses them. coeffs is typically the best-yet-found coefficients
- * for a ruleset but can also be some more widely flung ones that you want to
- * start the trainer from. The rulesets you specify here show up in the Train
- * UI, from which you can kick off a training run.
+ * More mechanically, a map of names to {coeffs, rulesetMaker, ...} objects.
+ * rulesetMaker is a function that returns a ruleset. coeffs is typically the
+ * best-yet-found set of coefficients for a ruleset. The rulesets you specify
+ * here show up in the FathomFox Trainer UI, from which you can kick off a
+ * training run. However, the neural-net-based trainer is a better bet these
+ * days. The FathomFox Trainer remains because it is a useful debugging tool
+ * when run for 1 iteration, showing what the ruleset chose wrong.
  */
 const trainees = new Map();
 
@@ -31,6 +32,7 @@ trainees.set(
      //
      // The content-area size to use while training. Defaults to 1024x768.
 
+     // DEPRECATED:
      // successFunction: (facts, traineeId) => trueOrFalse,
      //
      // By default, elements with a `data-fathom` attribute that matches the
@@ -206,11 +208,6 @@ trainees.set(
 
             const rules = ruleset([
                 rule(dom('div'), type('overlay')),
-                // Fuzzy AND is multiplication (at least that's the definition we use,
-                // since Fathom already implements it and it allows participation of
-                // all anded rules.
-
-                // I'm thinking each rule returns a confidence, 0..1, reined in by a sigmoid or trapezoid. That seems to fit the features I've collected well. I can probably make up most of those coefficients. Then we multiply the final results by a coeff each, for weighting. That will cap our total to the sum of the weights. We can then scale that sum down to 0..1 if we want, to build upon, by dividing by the product of the weights. [Actually, that weighting approach doesn't work, since the weights just get counteracted at the end. What we would need is a geometric mean-like approach, where individual rules' output is raised to a power to express its weight. Will Fathom's plain linear stuff suffice for now? If we want to keep an intuitive confidence-like meaning for each rule, we could have the coeffs be the powers each is raised to. I don't see the necessity of taking the root at the end (unless the score is being used as input to some intuitively meaningful threshold later), though we can outside the ruleset if we want. Going with a 0..1 confidence-based range means a rule can never boost a score--only add doubt--but I'm not sure that's a problem. If a rule wants to say "IHNI", it can also return 1 and thus not change the product. (Though they'll add 1 to n in the nth-root. Is that a problem?)] The optimizer will have to consider fractional coeffs so we can lighten up unduly certain rules.
                 rule(type('overlay'), score(big), {name: 'big'}),
                 rule(type('overlay'), score(nearlyOpaque), {name: 'nearlyOpaque'}),
                 rule(type('overlay'), score(monochrome), {name: 'monochrome'}),
