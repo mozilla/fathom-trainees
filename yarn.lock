@@ -1558,10 +1558,10 @@ fast-safe-stringify@^1.0.8, fast-safe-stringify@^1.2.3:
   resolved "https://registry.yarnpkg.com/fast-safe-stringify/-/fast-safe-stringify-1.2.3.tgz#9fe22c37fb2f7f86f06b8f004377dbf8f1ee7bc1"
   integrity sha512-QJYT/i0QYoiZBQ71ivxdyTqkwKkQ0oxACXHYxH2zYHJEgzi2LsbjgvtzTbLi1SZcF190Db2YP7I7eTsU2egOlw==
 
-fathom-web@^2.8.0:
-  version "2.7.0"
-  resolved "https://registry.yarnpkg.com/fathom-web/-/fathom-web-2.7.0.tgz#d5375923fd3a1b11547abbeaf9f7cb0c27492841"
-  integrity sha512-2uXLtz+0IGOSlsc8BUbznLHqZAWBswooQ3qTi42Yk2X4Mtl2b3uvkFVVimMe/DYYsyc002gf5CqV/RHgKDBQ0w==
+fathom-web@^3.0.0-alpha.1:
+  version "3.0.0-alpha.1"
+  resolved "https://registry.yarnpkg.com/fathom-web/-/fathom-web-3.0.0-alpha.1.tgz#a364f11f77b8320170bf043d94afc295feecd117"
+  integrity sha512-3vWozdcOAHvJhWD4tyjeypnpTvswyr9u1ygeJU8z7HPGOr4uzIYGSyJ4MFz1r5zYHJNqBc81T8Pg9jrEZKkjOQ==
   dependencies:
     jsdom "^11.2.0"
     wu "^2.1.0"
