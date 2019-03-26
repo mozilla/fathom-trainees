@@ -23,3 +23,4 @@ Once you've found some well-performing coefficients, replace the old ones in `sr
   * Switch to specifying coefficients as a Map instead of an Array.
   * rulesetMaker function no longer takes any params. In Fathom 3, all weighting is done internal to the framework.
   * All rules should return a value between 0 and 1, representing a confidence. ZEROISH and ONEISH constants are no longer needed.
+  * `ruleset()` takes its rules as an array rather than as a flat sequence of arguments.
