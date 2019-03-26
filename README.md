@@ -13,3 +13,13 @@ This is a "sidecar" addon to FathomFox; it is where you park rulesets to be trai
 7. Open the FathomFox Trainer as documented at https://github.com/mozilla/fathom-fox#the-trainer, drag some labeled pages into the same window, and train your ruleset.
 
 Once you've found some well-performing coefficients, replace the old ones in `src/trainees.js`, and ship your ruleset!
+
+## Version History
+
+### 3.0
+
+* Start naming versions, just for ease of conversation. All pushes to master are considered released, however.
+* Upgrade to Fathom 3. This required some changes:
+  * Switch to specifying coefficients as a Map instead of an Array.
+  * rulesetMaker function no longer takes any params. In Fathom 3, all weighting is done internal to the framework.
+  * All rules should return a value between 0 and 1, representing a confidence. ZEROISH and ONEISH constants are no longer needed.
