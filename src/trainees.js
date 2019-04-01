@@ -49,11 +49,6 @@ trainees.set(
      // The type of node to extract features from when using the Vectorizer
 
      rulesetMaker:
-        // I don't think V8 is smart enough to compile this once and then sub in
-        // new coeff values. I'm not sure about Spidermonkey. We may want to
-        // optimize by rolling it into a class and storing coeffs explicitly in an
-        // instance var. [Nope, Spidermonkey does it as efficiently as one could
-        // hope, with just a {code, pointer to closure scope} pair.]
         function () {
             /**
              * Return whether the passed-in div is the size of the whole viewport/document
