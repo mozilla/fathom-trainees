@@ -25,7 +25,10 @@ function mindlesslyFactoredOutSettings(name) {
             json(),
             globals(),
             builtins()
-        ]
+        ],
+        watch: {
+            chokidar: false
+        }
     }
 }
 
