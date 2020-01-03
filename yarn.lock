@@ -1507,9 +1507,9 @@ expand-range@^1.8.1:
     fill-range "^2.1.0"
 
 extend@~3.0.0, extend@~3.0.1:
-  version "3.0.1"
-  resolved "https://registry.yarnpkg.com/extend/-/extend-3.0.1.tgz#a755ea7bc1adfcc5a31ce7e762dbaadc5e636444"
-  integrity sha1-p1Xqe8Gt/MWjHOfnYtuq3F5jZEQ=
+  version "3.0.2"
+  resolved "https://registry.yarnpkg.com/extend/-/extend-3.0.2.tgz#f8b1136b4071fbd8eb140aff858b1019ec2915fa"
+  integrity sha512-fjquC59cD7CyW6urNXK0FBufkZcoiGG80wTuPujX590cB5Ttln20E2UB4S/WARVqhXffZl2LNgS+gQdPIIim/g==
 
 extglob@^0.3.1:
   version "0.3.2"
@@ -1558,10 +1558,10 @@ fast-safe-stringify@^1.0.8, fast-safe-stringify@^1.2.3:
   resolved "https://registry.yarnpkg.com/fast-safe-stringify/-/fast-safe-stringify-1.2.3.tgz#9fe22c37fb2f7f86f06b8f004377dbf8f1ee7bc1"
   integrity sha512-QJYT/i0QYoiZBQ71ivxdyTqkwKkQ0oxACXHYxH2zYHJEgzi2LsbjgvtzTbLi1SZcF190Db2YP7I7eTsU2egOlw==
 
-fathom-web@^3.0.0-alpha.1:
-  version "3.0.0-alpha.1"
-  resolved "https://registry.yarnpkg.com/fathom-web/-/fathom-web-3.0.0-alpha.1.tgz#a364f11f77b8320170bf043d94afc295feecd117"
-  integrity sha512-3vWozdcOAHvJhWD4tyjeypnpTvswyr9u1ygeJU8z7HPGOr4uzIYGSyJ4MFz1r5zYHJNqBc81T8Pg9jrEZKkjOQ==
+fathom-web@^3.1.0:
+  version "3.1.0"
+  resolved "https://registry.yarnpkg.com/fathom-web/-/fathom-web-3.1.0.tgz#21ffc8e39c6cfa68272f772476de51ebcc23e281"
+  integrity sha512-XubnFEvTN9nNfqma9eHQOWfPiTj8RivBiwkq0YqWsSe1OJxqxOeFRfm3XdJCpmpCuXUg9xX8y9Fg6uTXb5nJQw==
   dependencies:
     jsdom "^11.2.0"
     wu "^2.1.0"
@@ -3140,7 +3140,7 @@ once@~1.3.0:
 
 onetime@^1.0.0:
   version "1.1.0"
-  resolved "http://registry.npmjs.org/onetime/-/onetime-1.1.0.tgz#a1f7838f8314c516f05ecefcbc4ccfe04b4ed789"
+  resolved "https://registry.npmjs.org/onetime/-/onetime-1.1.0.tgz#a1f7838f8314c516f05ecefcbc4ccfe04b4ed789"
   integrity sha1-ofeDj4MUxRbwXs78vEzP4EtO14k=
 
 open@0.0.5:
